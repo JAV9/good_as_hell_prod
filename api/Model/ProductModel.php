@@ -29,6 +29,17 @@ class ProductModel extends Database
 
   }
 
+  public function searchProduct($name)
+  {
+
+    $params = [
+      $name
+    ];
+
+    return $this->select("SELECT * FROM products WHERE name LIKE CONCAT('%',?,'%')", $params);
+
+  }
+
   public function create($name, $price, $available, $img, $url)
   {
 

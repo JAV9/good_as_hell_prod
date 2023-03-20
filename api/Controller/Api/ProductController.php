@@ -389,4 +389,81 @@ class ProductController extends BaseController
     }
 
   }
+
+
+  /**
+   * "/searchProduct.php" Endpoint - Obtener productos por busqueda nombre
+   * Parámetros GET
+   */
+  public function searchProduct()
+  {
+
+    $strErrorDesc = '';
+
+    $requestMethod = $_SERVER["REQUEST_METHOD"];
+
+    $arrQueryStringParams = $this->getGETParams();
+
+    if (strtoupper($requestMethod) == 'GET') {
+
+      try {
+
+        $productModel = new productModel();
+
+        $arr = $productModel->searchProduct($arrQueryStringParams['p']);
+
+        for ($i = 0; $i < sizeof($arr); $i++) {
+          $arr[$i]["img"] = IMG_PATH . $arr[$i]["img"];
+        }
+
+        if ($arr == NULL) {
+
+          $responseData = json_encode(["code" => 401, "error" => "Product not found"]);
+
+        } else {
+
+          $responseData = json_encode($arr);
+
+        }
+
+      } catch (Error $e) {
+
+        $strErrorDesc = $e->getMessage() . 'Something went wrong! Please contact support.';
+
+        $strErrorHeader = 'HTTP/1.1 500 Internal Server Error';
+
+      }
+
+    } else {
+
+      $strErrorDesc = 'Method not supported';
+
+      $strErrorHeader = 'HTTP/1.1 422 Unprocessable Entity';
+
+    }
+
+    // send output
+
+    if (!$strErrorDesc) {
+
+      $this->sendOutput(
+
+        $responseData,
+
+        array('Content-Type: application/json', 'HTTP/1.1 200 OK')
+
+      );
+
+    } else {
+
+      $this->sendOutput(
+        json_encode(array('error' => $strErrorDesc)),
+
+        array('Content-Type: application/json', $strErrorHeader)
+
+      );
+
+    }
+
+  }
 }
