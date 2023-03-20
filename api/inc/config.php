@@ -16,4 +16,4 @@ define("DB_DATABASE_NAME", "good_as_hell");
 
 define("UPLOAD_FOLDER", getcwd());
 
-define("IMG_PATH", $_SERVER["SERVER_NAME"] . "/api/uploads/");
+define("IMG_PATH", "https://" . $_SERVER["SERVER_NAME"] . "/api/uploads/");
