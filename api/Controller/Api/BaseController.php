@@ -44,6 +44,21 @@ class BaseController
 
     }
 
+
+    /**
+     * Get GET params.
+     *
+     * @return array
+     */
+
+    protected function getGETParams()
+    {
+
+        return $_GET;
+
+    }
+
+
     /**
      * Get querystring params.
      *
@@ -55,6 +70,11 @@ class BaseController
 
         return $_POST;
 
+    }
+
+    protected function getJSONParams()
+    {
+        return json_decode(file_get_contents('php://input'), true);
     }
 
     /**

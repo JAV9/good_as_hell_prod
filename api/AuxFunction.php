@@ -79,4 +79,22 @@ class AuxFunction
 
     }
 
+    public /**
+      * prepara string para SEO optimizado
+      * @param String $string 
+      * @return String $string string optimizado para SEO
+      */
+        function seofy(
+        $sString = ''
+    )
+    {
+        $sString = preg_replace('/[^\\pL\d_]+/u', '-', $sString);
+        $sString = trim($sString, "-");
+        $sString = iconv('utf-8', "us-ascii//TRANSLIT", $sString);
+        $sString = strtolower($sString);
+        $sString = preg_replace('/[^-a-z0-9_]+/', '', $sString);
+
+        return $sString;
+    }
+
 }

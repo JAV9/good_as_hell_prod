@@ -84,7 +84,7 @@ class UserController extends BaseController
 
         $requestMethod = $_SERVER["REQUEST_METHOD"];
 
-        $params = $this->getPostParams();
+        $params = $this->getJSONParams();
 
         if (strtoupper($requestMethod) == 'POST') {
 
@@ -92,9 +92,17 @@ class UserController extends BaseController
 
                 $userModel = new UserModel();
 
-                $arrUsers = $userModel->getUser($params['email'], $params['passw']);
+                $arrUsers = $userModel->getUser($params['email'], $params['pwd']);
 
-                $responseData = json_encode($arrUsers);
+                if ($arrUsers == NULL) {
+
+                    $responseData = json_encode(["code" => 401]);
+
+                } else {
+
+                    $responseData = json_encode($arrUsers);
+
+                }
 
             } catch (Error $e) {
 
@@ -147,7 +155,7 @@ class UserController extends BaseController
 
         $requestMethod = $_SERVER["REQUEST_METHOD"];
 
-        $params = $this->getPostParams();
+        $params = $this->getJSONParams();
 
         if (strtoupper($requestMethod) == 'POST') {
 
@@ -160,7 +168,7 @@ class UserController extends BaseController
                     $params['lastname'],
                     $params['email'],
                     $params['address'],
-                    $params['passw']
+                    $params['pwd']
                 );
 
                 $responseData = json_encode($arrUsers);

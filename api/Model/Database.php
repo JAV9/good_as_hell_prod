@@ -42,7 +42,7 @@ class Database
 
         } catch (Exception $e) {
 
-            throw new Exception($e->getMessage());
+            return array("state" => false, "error" => $e->getMessage());
 
         }
 
@@ -59,13 +59,19 @@ class Database
 
             $stmt->close();
 
-            return $result;
+            if ($result) {
+
+                return array("state" => true);
+
+            } else {
+
+                return $result;
+
+            }
 
         } catch (Exception $e) {
 
-            return false;
-
-            // throw new Exception($e->getMessage());
+            return array("state" => false, "error" => $e->getMessage());
 
         }
 
@@ -78,17 +84,37 @@ class Database
 
             $stmt = $this->executeStatement($query, $params);
 
-            $result = $stmt;
+            $result = $stmt->affected_rows > 0;
 
             $stmt->close();
 
-            return $result;
+            return array("state" => $result);
+
 
         } catch (Exception $e) {
 
-            return false;
+            return array("state" => false, "error" => $e->getMessage());
 
-            // throw new Exception($e->getMessage());
+        }
+
+    }
+
+    public function delete($query = "", $params = [])
+    {
+
+        try {
+
+            $stmt = $this->executeStatement($query, $params);
+
+            $result = $stmt->affected_rows > 0;
+
+            $stmt->close();
+
+            return array("state" => $result, "code" => 200);
+
+        } catch (Exception $e) {
+
+            return array("state" => false, "error" => $e->getMessage());
 
         }
 
@@ -113,7 +139,7 @@ class Database
 
         } catch (Exception $e) {
 
-            throw new Exception($e->getMessage());
+            return array("state" => false, "error" => $e->getMessage());
 
         }
 

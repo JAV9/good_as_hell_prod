@@ -17,19 +17,20 @@ class UserModel extends Database
     }
 
 
-    public function getUser($email, $passw)
+    public function getUser($email, $pwd)
     {
 
         $params = [
             $email,
-            $passw
+            md5($pwd)
         ];
 
-        return $this->select("SELECT * FROM users WHERE email = ? AND passw = ?", $params);
+        $result = $this->select("SELECT * FROM users WHERE email = ?  AND pwd = ? LIMIT 1", $params);
 
+        return $result[0];
     }
 
-    public function create($name, $lastname, $email, $address, $passw)
+    public function create($name, $lastname, $email, $address, $pwd)
     {
 
         $params = [
@@ -37,10 +38,10 @@ class UserModel extends Database
             $lastname,
             $email,
             $address,
-            $passw
+            md5($pwd)
         ];
 
-        $result = $this->insert("INSERT INTO users (name, lastname, email, address, passw) VALUES (
+        $result = $this->insert("INSERT INTO users (name, lastname, email, address, pwd) VALUES (
             ?,
             ?,
             ?,
@@ -48,11 +49,14 @@ class UserModel extends Database
             ?
         )", $params);
 
-        $response = ["code" => 401, "message" => "Insert KO"];
+        $response = ["code" => 401, "message" => "Insert KO", "result" => $result];
 
-        if ($result) {
+        if ($result["state"]) {
 
-            $response = ["code" => 200, "message" => "Insert OK"];
+            $user = ["name" => $name, "latname" => $lastname, "address" => $address];
+            $status = "authenticated";
+
+            $response = ["code" => 200, "message" => "Insert OK", "user" => $user, "status" => $status];
 
         }
 
