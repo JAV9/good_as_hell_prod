@@ -30,7 +30,19 @@ class UserModel extends Database
         return $result[0];
     }
 
-    public function create($name, $lastname, $email, $address, $pwd)
+    public function getUserById($id)
+    {
+
+        $params = [
+            $id
+        ];
+
+        $result = $this->select("SELECT * FROM users WHERE id = ?", $params);
+
+        return $result[0];
+    }
+
+    public function create($name, $lastname, $email, $address, $pwd, $influencer = 0)
     {
 
         $params = [
@@ -38,10 +50,12 @@ class UserModel extends Database
             $lastname,
             $email,
             $address,
-            md5($pwd)
+            md5($pwd),
+            $influencer
         ];
 
-        $result = $this->insert("INSERT INTO users (name, lastname, email, address, pwd) VALUES (
+        $result = $this->insert("INSERT INTO users (name, lastname, email, address, pwd, influencer) VALUES (
+            ?,
             ?,
             ?,
             ?,
@@ -63,4 +77,71 @@ class UserModel extends Database
         return $response;
 
     }
+
+    public function deleteUser($id)
+    {
+
+        $params = [
+            $id
+        ];
+
+        return $this->delete("DELETE FROM users WHERE id = ?", $params);
+
+    }
+
+    public function updateUser($id, $name, $lastname, $email, $address, $influencer, $pwd = NULL)
+    {
+
+        $query = " UPDATE users 
+                    SET 
+                        name = ?, 
+                        lastname = ?, 
+                        email = ?, 
+                        address = ?,
+                        influencer = ?
+                    WHERE id = ?";
+
+        $params = [
+            $name,
+            $lastname,
+            $email,
+            $address,
+            $influencer,
+            $id
+        ];
+
+        if ($pwd != NULL) {
+
+            $params = [
+                $name,
+                $lastname,
+                $email,
+                $address,
+                $influencer,
+                $pwd,
+                $id
+            ];
+
+            $query = " UPDATE users 
+                        SET 
+                            name = ?, 
+                            lastname = ?, 
+                            email = ?, 
+                            address = ?,
+                            influencer = ?,
+                            pwd = ?
+                        WHERE id = ?";
+        }
+
+        $result = $this->update($query, $params);
+
+        $message = "Usuario actualizado ";
+
+        $response = ["code" => 200, "message" => $message, "result" => $result];
+
+        return $response;
+
+    }
+
+
 }

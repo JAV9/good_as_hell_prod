@@ -11,7 +11,7 @@ class ProductController extends BaseController
   }
 
   /**
-   * "/listUser.php" Endpoint - Obtener lista de productos
+   * "/listProducts.php" Endpoint - Obtener lista de productos
    */
   public function list()
   {
@@ -121,7 +121,8 @@ class ProductController extends BaseController
           $params['price'],
           $params['available'],
           $img,
-          $this->auxFunc->seofy($params['name'])
+          $this->auxFunc->seofy($params['name']),
+          json_decode($params["categories"], true)
         );
 
         $responseData = json_encode($arr);
@@ -189,13 +190,17 @@ class ProductController extends BaseController
 
         $img = NULL;
 
-        $uploadImg = $this->auxFunc->uploadFile("/uploads/", $_FILES["img"]);
+        if ($_FILES["img"] != NULL) {
 
-        if ($uploadImg["code"] == 200) {
+          $uploadImg = $this->auxFunc->uploadFile("/uploads/", $_FILES["img"]);
 
-          $img = $uploadImg["filename"];
+          if ($uploadImg["code"] == 200) {
 
+            $img = $uploadImg["filename"];
+
+          }
         }
+
 
         $arr = $productModel->updateProduct(
           $params['id'],
@@ -203,7 +208,8 @@ class ProductController extends BaseController
           $params['price'],
           $params['available'],
           $img,
-          $this->auxFunc->seofy($params['name'])
+          $this->auxFunc->seofy($params['name']),
+          json_decode($params["categories"], true)
         );
 
         $responseData = json_encode($arr);

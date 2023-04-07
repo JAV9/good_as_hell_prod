@@ -86,8 +86,7 @@ class AuxFunction
       */
         function seofy(
         $sString = ''
-    )
-    {
+    ) {
         $sString = preg_replace('/[^\\pL\d_]+/u', '-', $sString);
         $sString = trim($sString, "-");
         $sString = iconv('utf-8', "us-ascii//TRANSLIT", $sString);

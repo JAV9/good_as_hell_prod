@@ -14,7 +14,7 @@ class ProductModel extends Database
     ];
 
 
-    return $this->select("SELECT * FROM products ORDER BY id ASC LIMIT ?", $params);
+    return $this->select("SELECT * FROM products ORDER BY id DESC LIMIT ?", $params);
 
   }
 
@@ -25,7 +25,49 @@ class ProductModel extends Database
       $url
     ];
 
-    return $this->select("SELECT * FROM products WHERE url = ?", $params)[0];
+    //return $this->select("SELECT * FROM products WHERE url = ?", $params)[0];
+
+
+    $product = $this->select("SELECT * FROM products WHERE url = ?", $params)[0];
+
+    $categories = $this->getProductCategories($product["id"]);
+
+    $product["categories"] = $categories["categories"];
+    $product["categoriesString"] = $categories["categoriesString"];
+    $product["categoriesLabelValue"] = $categories["categoriesLabelValue"];
+
+    return $product;
+
+  }
+
+  /**
+   * @param int $product - id producto
+   * @return array [-id de categorias-, -categorias unidas mediante comas en version texto-] 
+   */
+  private function getProductCategories($product)
+  {
+
+    $params = [$product];
+
+    $query = "SELECT c.name, c.id
+              FROM categories AS c 
+              LEFT JOIN  product_categories AS pc 
+              ON  pc.category = c.id 
+              WHERE pc.product = ?";
+
+    $categories = $this->select($query, $params);
+
+    $categoriesFormatted = [];
+    $categoriesFormattedLabelValue = [];
+
+    foreach ($categories as $c) {
+      array_push($categoriesFormatted, $c["name"]);
+      array_push($categoriesFormattedLabelValue, ["value" => $c["id"], "label" => $c["name"]]);
+    }
+
+    $categoriesString = implode(", ", $categoriesFormatted);
+
+    return ["categories" => $categoriesFormatted, "categoriesString" => $categoriesString, "categoriesLabelValue" => $categoriesFormattedLabelValue];
 
   }
 
@@ -40,7 +82,7 @@ class ProductModel extends Database
 
   }
 
-  public function create($name, $price, $available, $img, $url)
+  public function create($name, $price, $available, $img, $url, $categories)
   {
 
     $params = [
@@ -64,7 +106,13 @@ class ProductModel extends Database
 
     if ($result["state"]) {
 
-      $response = ["code" => 200, "message" => "Producto insertado"];
+      $insertedId = $this->getLastInsertId();
+
+      $message = "Producto insertado " . $insertedId;
+
+      $this->insertCategories($insertedId, $categories, $message);
+
+      $response = ["code" => 200, "message" => $message];
 
     }
 
@@ -73,7 +121,55 @@ class ProductModel extends Database
   }
 
 
-  public function updateProduct($id, $name, $price, $available, $img, $url)
+  /**
+   * @param $product - id producto
+   * @param $categories - array de categorias con ids [1, 20, 18...]
+   * @param $message - mensaje de respuesta
+   */
+  private function insertCategories($product, $categories, $message)
+  {
+
+    if (sizeof($categories) > 0) {
+
+      $queryCategories = "INSERT INTO product_categories (product, category) VALUES ";
+      $categoryParams = [];
+
+      foreach ($categories as $c) {
+
+        $queryCategories .= "(" . $product . ", ?),";
+
+        array_push($categoryParams, $c);
+
+      }
+
+      // elimina la ultima coma
+      $queryCategories = substr_replace($queryCategories, "", -1);
+
+      $categoriesResult = $this->insert($queryCategories, $categoryParams);
+
+      if ($categoriesResult["state"]) {
+
+        $message .= " con categorias";
+      }
+
+    }
+
+  }
+
+  /**
+   * @param $product - id producto 
+   */
+  private function deleteCategories($product)
+  {
+
+    $query = "DELETE FROM product_categories WHERE product = ?";
+
+    $params = [$product];
+
+    return $this->delete($query, $params);
+  }
+
+  public function updateProduct($id, $name, $price, $available, $img, $url, $categories)
   {
 
     $query = "UPDATE products SET name = ?, price = ?, available = ?, url = ? WHERE id = ?";
@@ -103,16 +199,17 @@ class ProductModel extends Database
 
     }
 
-
     $result = $this->update($query, $params);
 
-    $response = ["code" => 401, "message" => "Producto no actualizado", "result" => $result];
+    $message = "Producto actualizado ";
 
-    if ($result["state"]) {
+    // borra las categorias que tenia
+    $this->deleteCategories($id);
 
-      $response = ["code" => 200, "message" => "Producto actualizado"];
+    // inserta las nuevas
+    $this->insertCategories($id, $categories, $message);
 
-    }
+    $response = ["code" => 200, "message" => $message, "result" => $result];
 
     return $response;
 

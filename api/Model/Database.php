@@ -145,4 +145,9 @@ class Database
 
     }
 
+    public function getLastInsertId()
+    {
+        return $this->connection->insert_id;
+    }
+
 }
