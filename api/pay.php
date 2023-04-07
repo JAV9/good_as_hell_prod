@@ -161,7 +161,7 @@ function authenticationOperationV1($cardDataInfoRequest, $protocolVersion)
     $acsURL = $response->getAcsURLParameter();
     $pAReq = $response->getPAReqParameter();
     $md = $response->getMDParameter();
-    $termUrl = "http://localhost/ejemplosAPIREST/Example3DSecureV1Reference.php?urlOK=yes&ope=" . $ope;
+    $termUrl = "https://vm20-beta.containers.fdi.ucm.es/api/inc/rest_API_PHP/Example3DSecureV1Reference.php?urlOK=yes&ope=" . $ope;
 
     //Formulario iframe que devuelve PARes, que es el resultado de la autenticación.
     $form = '<iframe name="redsys_iframe_acs" name="redsys_iframe_acs" src=""
