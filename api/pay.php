@@ -73,7 +73,12 @@ function initialOperationV1($orderID)
   $response = $service->sendOperation($cardDataInfoRequest);
 
   //Method the gives the request Result (OK/KO/AUT)
+
+  echo "RESPONSE";
+  var_dump($response->getResult());
+
   switch ($response->getResult()) {
+
 
     case RESTConstants::$RESP_LITERAL_OK:
 
