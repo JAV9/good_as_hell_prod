@@ -147,6 +147,7 @@ function authenticationOperationV1($cardDataInfoRequest, $protocolVersion)
   //Method the gives the request Result (OK/KO/AUT)
   switch ($response->getResult()) {
     case RESTConstants::$RESP_LITERAL_OK:
+      header('Location: https:/vm20containers.fdi.ucm.es/pago/ok');
       //This is a frictionless response. In this case the operation was ok and the api return the final operation response
       echo "<h1>Operation was OK</h1>";
       break;
@@ -155,6 +156,7 @@ function authenticationOperationV1($cardDataInfoRequest, $protocolVersion)
       break;
 
     case RESTConstants::$RESP_LITERAL_KO:
+      header('Location: https:/vm20containers.fdi.ucm.es/pago/error');
       echo "<h1>Operation was not OK</h1>";
       break;
 
@@ -254,10 +256,12 @@ function challengeRequestV1($operation)
   //Method the gives the request Result (OK/KO)
   switch ($response->getResult()) {
     case RESTConstants::$RESP_LITERAL_OK:
+      header('Location: https:/vm20containers.fdi.ucm.es/pago/ok');
       echo "<h1>Operation was OK</h1>";
       break;
 
     case RESTConstants::$RESP_LITERAL_KO:
+      header('Location: https:/vm20containers.fdi.ucm.es/pago/error');
       echo "<h1>Operation was not OK</h1>";
       break;
 
