@@ -1,6 +1,6 @@
 <?php
 $GLOBALS["REDSYS_API_PATH"] = realpath(dirname(__FILE__));
-$GLOBALS["REDSYS_LOG_ENABLED"] = false;
+$GLOBALS["REDSYS_LOG_ENABLED"] = true;
 
 include_once $GLOBALS["REDSYS_API_PATH"] . "/Model/message/RESTOperationMessage.php";
 include_once $GLOBALS["REDSYS_API_PATH"] . "/Model/message/RESTAuthenticationRequestMessage.php";
