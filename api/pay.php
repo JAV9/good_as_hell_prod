@@ -28,9 +28,6 @@ function main()
         //In the termUrl the commerce must catch the return parameter that the AcsURL gives back
         //Once again, the commerce needs to send these catched parameters in a Request
         challengeRequestV1($operation);
-
-        //
-        header('Location: https:/vm20containers.fdi.ucm.es/pago/ok');
       }
       // sino, redirigir a vm20containers.fdi.ucm.es/pago/error
       header('Location: https:/vm20containers.fdi.ucm.es/pago/error');
@@ -79,6 +76,10 @@ function initialOperationV1($orderID)
   switch ($response->getResult()) {
 
     case RESTConstants::$RESP_LITERAL_OK:
+
+      //
+      header('Location: https:/vm20containers.fdi.ucm.es/pago/ok');
+
       //In this case the operation was ok and PSD2= "N", so authentication is not needed but its possible to make authentication
       echo "<h1>Operation was OK</h1>";
       //In this case the commerce can choose which kind of operation want to use
@@ -99,6 +100,8 @@ function initialOperationV1($orderID)
 
     case RESTConstants::$RESP_LITERAL_KO:
       //Operation error
+      //
+      header('Location: https:/vm20containers.fdi.ucm.es/pago/error');
       echo "<h1>Operation was not OK</h1>";
       break;
 
