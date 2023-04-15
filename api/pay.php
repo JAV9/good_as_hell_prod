@@ -16,14 +16,14 @@ function main()
     initialOperationV1($orderID);
   } else {
     if (!empty($_POST)) {
-      echo "POST IS NOT EMPTY!\n";
+      // echo "POST IS NOT EMPTY!\n";
       if ($_GET['urlOK'] == 'yes') {
         // redirigir a web  vm20containers.fdi.ucm.es/pago/ok
         //header('Content-Type: text/html; charset=utf-8');
         $operation = unserialize(base64_decode(strtr($_GET['ope'], '-_', '+/')));
-        echo "OPERATION: ";
-        var_dump($operation);
-        echo "Llamando a la función Challenge Request...";
+        // echo "OPERATION: ";
+        // var_dump($operation);
+        // echo "Llamando a la función Challenge Request...";
         //The commerce needs to send these authentication parameter (PAreq and md) by post method to AcsURL
         //In the termUrl the commerce must catch the return parameter that the AcsURL gives back
         //Once again, the commerce needs to send these catched parameters in a Request
@@ -81,7 +81,7 @@ function initialOperationV1($orderID)
       header('Location: https:/vm20containers.fdi.ucm.es/pago/ok');
 
       //In this case the operation was ok and PSD2= "N", so authentication is not needed but its possible to make authentication
-      echo "<h1>Operation was OK</h1>";
+      //    echo "<h1>Operation was OK</h1>";
       //In this case the commerce can choose which kind of operation want to use
       //directPaymentOperation (example of this operation in InsiteExampleDirectPayment.java)
       //or authenticationOperationV1 (recommended)
@@ -102,7 +102,7 @@ function initialOperationV1($orderID)
       //Operation error
       //
       header('Location: https:/vm20containers.fdi.ucm.es/pago/error');
-      echo "<h1>Operation was not OK</h1>";
+      // echo "<h1>Operation was not OK</h1>";
       break;
 
     default:
@@ -149,7 +149,7 @@ function authenticationOperationV1($cardDataInfoRequest, $protocolVersion)
     case RESTConstants::$RESP_LITERAL_OK:
       header('Location: https:/vm20containers.fdi.ucm.es/pago/ok');
       //This is a frictionless response. In this case the operation was ok and the api return the final operation response
-      echo "<h1>Operation was OK</h1>";
+      //echo "<h1>Operation was OK</h1>";
       break;
 
     case RESTConstants::$RESP_LITERAL_AUT:
@@ -157,7 +157,7 @@ function authenticationOperationV1($cardDataInfoRequest, $protocolVersion)
 
     case RESTConstants::$RESP_LITERAL_KO:
       header('Location: https:/vm20containers.fdi.ucm.es/pago/error');
-      echo "<h1>Operation was not OK</h1>";
+      // echo "<h1>Operation was not OK</h1>";
       break;
 
     default:
@@ -257,12 +257,12 @@ function challengeRequestV1($operation)
   switch ($response->getResult()) {
     case RESTConstants::$RESP_LITERAL_OK:
       header('Location: https:/vm20containers.fdi.ucm.es/pago/ok');
-      echo "<h1>Operation was OK</h1>";
+      //echo "<h1>Operation was OK</h1>";
       break;
 
     case RESTConstants::$RESP_LITERAL_KO:
       header('Location: https:/vm20containers.fdi.ucm.es/pago/error');
-      echo "<h1>Operation was not OK</h1>";
+      //echo "<h1>Operation was not OK</h1>";
       break;
 
     default:
