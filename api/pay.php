@@ -18,6 +18,7 @@ function main()
     if (!empty($_POST)) {
       echo "POST IS NOT EMPTY!\n";
       if ($_GET['urlOK'] == 'yes') {
+        // redirigir a web  vm20containers.fdi.ucm.es/pago/ok
         //header('Content-Type: text/html; charset=utf-8');
         $operation = unserialize(base64_decode(strtr($_GET['ope'], '-_', '+/')));
         echo "OPERATION: ";
@@ -27,7 +28,13 @@ function main()
         //In the termUrl the commerce must catch the return parameter that the AcsURL gives back
         //Once again, the commerce needs to send these catched parameters in a Request
         challengeRequestV1($operation);
+
+        //
+        header('Location: https:/vm20containers.fdi.ucm.es/pago/ok');
       }
+      // sino, redirigir a vm20containers.fdi.ucm.es/pago/error
+      header('Location: https:/vm20containers.fdi.ucm.es/pago/error');
+
     }
   }
 

@@ -1,6 +1,6 @@
 <?php
 
-class ProductController extends BaseController
+class PaymentController extends BaseController
 {
 
   private $auxFunc;
@@ -11,7 +11,7 @@ class ProductController extends BaseController
   }
 
   /**
-   * "/listProducts.php" Endpoint - Obtener lista de productos
+   * "/listPayment.php" Endpoint - Obtener lista de pagos
    */
   public function list()
   {
@@ -20,27 +20,23 @@ class ProductController extends BaseController
 
     $requestMethod = $_SERVER["REQUEST_METHOD"];
 
-    $arrQueryStringParams = $this->getGETParams();
+    $arrQueryStringParams = $this->getQueryStringParams();
 
     if (strtoupper($requestMethod) == 'GET') {
 
       try {
 
-        $productModel = new productModel();
+        $paymentModel = new PaymentModel();
 
-        $filters = [];
+        $intLimit = 10000;
 
-        if (isset($arrQueryStringParams['category']) && $arrQueryStringParams['category']) {
+        if (isset($arrQueryStringParams['limit']) && $arrQueryStringParams['limit']) {
 
-          $filters["category"] = $arrQueryStringParams['category'];
+          $intLimit = $arrQueryStringParams['limit'];
 
         }
 
-        $arr = $productModel->getProducts($filters);
-
-        for ($i = 0; $i < sizeof($arr); $i++) {
-          $arr[$i]["img"] = IMG_PATH . $arr[$i]["img"];
-        }
+        $arr = $paymentModel->listPayment($intLimit);
 
         $responseData = json_encode($arr);
 
@@ -87,9 +83,8 @@ class ProductController extends BaseController
 
 
   /**
-   * "createProduct.php" Endpoint - crear un producto
-   * Parámetros como multipart/form-data que recogemos por POST,
-   * no como JSON, debido al envio de imagenes
+   * "createPayment.php" Endpoint - crear un pago
+   * Parámetros como multipart/form-data que recogemos por POST
    */
   public function create()
   {
@@ -104,26 +99,23 @@ class ProductController extends BaseController
 
       try {
 
-        $productModel = new ProductModel();
+        $paymentModel = new PaymentModel();
 
-        $img = NULL;
-
-        $uploadImg = $this->auxFunc->uploadFile("/uploads/", $_FILES["img"]);
-
-        if ($uploadImg["code"] == 200) {
-
-          $img = $uploadImg["filename"];
-
-        }
-
-        $arr = $productModel->create(
-          $params['name'],
-          $params['price'],
-          $params['available'],
-          $img,
-          $this->auxFunc->seofy($params['name']),
-          json_decode($params["categories"], true)
+        $arr = $paymentModel->create(
+          $params['user'],
+          $params['total'],
+          json_decode($params["products"], true)
         );
+
+        // si arr[code] == 200 entonces insertar productos pago
+        // obtener ultima id de pago
+        $insertedId = $this->getLastInsertId();
+
+        if ($arr["code"] == 200) {
+          $productsOk = $paymentModel->insertProducts($insertedId, $params["products"]);
+
+          $arr["productosOk"] = $productsOk;
+        }
 
         $responseData = json_encode($arr);
 
@@ -169,11 +161,10 @@ class ProductController extends BaseController
   }
 
   /**
-   * "updateProduct.php" Endpoint - actualizar un producto por id
-   * Parámetros como multipart/form-data que recogemos por POST,
-   * no como JSON, debido al envio de imagenes
+   * "updatePayment.php" Endpoint - actualizar un pago por id
+   * Parámetros como multipart/form-data que recogemos por POST
    */
-  public function updateProduct()
+  public function updatePayment()
   {
 
     $strErrorDesc = '';
@@ -186,30 +177,22 @@ class ProductController extends BaseController
 
       try {
 
-        $productModel = new ProductModel();
+        $paymentModel = new PaymentModel();
 
-        $img = NULL;
 
-        if ($_FILES["img"] != NULL) {
-
-          $uploadImg = $this->auxFunc->uploadFile("/uploads/", $_FILES["img"]);
-
-          if ($uploadImg["code"] == 200) {
-
-            $img = $uploadImg["filename"];
-
-          }
+        if ($params['state'] == "COMPLETADO") {
+          $doneAt = date('Y-m-d H:i:s');
+          $done = 1;
+        } else {
+          $doneAt = "0000-00-00 00:00:00";
+          $done = 0;
         }
 
-
-        $arr = $productModel->updateProduct(
+        $arr = $paymentModel->updatePayment(
           $params['id'],
-          $params['name'],
-          $params['price'],
-          $params['available'],
-          $img,
-          $this->auxFunc->seofy($params['name']),
-          json_decode($params["categories"], true)
+          $params['state'],
+          $done,
+          $doneAt
         );
 
         $responseData = json_encode($arr);
@@ -257,9 +240,9 @@ class ProductController extends BaseController
 
 
   /**
-   * "deleteProduct.php" Endpoint - borrar un producto por su id
+   * "deletePayment.php" Endpoint - borrar una categoría por su id
    */
-  public function deleteProduct()
+  public function deletePayment()
   {
 
     $strErrorDesc = '';
@@ -272,9 +255,9 @@ class ProductController extends BaseController
 
       try {
 
-        $productModel = new ProductModel();
+        $paymentModel = new PaymentModel();
 
-        $arr = $productModel->deleteProduct(
+        $arr = $paymentModel->deletePayment(
           $params['id']
         );
 
@@ -322,10 +305,10 @@ class ProductController extends BaseController
   }
 
   /**
-   * "/getProduct.php" Endpoint - Obtener producto por su url
+   * "/getPayment.php" Endpoint - Obtener categoría por su url
    * Parámetros GET
    */
-  public function getProduct()
+  public function getPayment()
   {
 
     $strErrorDesc = '';
@@ -338,17 +321,16 @@ class ProductController extends BaseController
 
       try {
 
-        $productModel = new productModel();
+        $paymentModel = new PaymentModel();
 
-        $arr = $productModel->getProduct($arrQueryStringParams['url']);
+        $arr = $paymentModel->getPayment($arrQueryStringParams['url']);
 
         if ($arr == NULL) {
 
-          $responseData = json_encode(["code" => 401, "error" => "Product not found"]);
+          $responseData = json_encode(["code" => 401, "error" => "Categoria no encontrada"]);
 
         } else {
 
-          $arr["img"] = IMG_PATH . $arr["img"];
           $arr["code"] = 200;
 
           $responseData = json_encode($arr);
@@ -396,80 +378,4 @@ class ProductController extends BaseController
 
   }
 
-
-  /**
-   * "/searchProduct.php" Endpoint - Obtener productos por busqueda nombre
-   * Parámetros GET
-   */
-  public function searchProduct()
-  {
-
-    $strErrorDesc = '';
-
-    $requestMethod = $_SERVER["REQUEST_METHOD"];
-
-    $arrQueryStringParams = $this->getGETParams();
-
-    if (strtoupper($requestMethod) == 'GET') {
-
-      try {
-
-        $productModel = new productModel();
-
-        $arr = $productModel->searchProduct($arrQueryStringParams['p']);
-
-        for ($i = 0; $i < sizeof($arr); $i++) {
-          $arr[$i]["img"] = IMG_PATH . $arr[$i]["img"];
-        }
-
-        if ($arr == NULL) {
-
-          $responseData = json_encode(["code" => 401, "error" => "Product not found"]);
-
-        } else {
-
-          $responseData = json_encode($arr);
-
-        }
-
-      } catch (Error $e) {
-
-        $strErrorDesc = $e->getMessage() . 'Something went wrong! Please contact support.';
-
-        $strErrorHeader = 'HTTP/1.1 500 Internal Server Error';
-
-      }
-
-    } else {
-
-      $strErrorDesc = 'Method not supported';
-
-      $strErrorHeader = 'HTTP/1.1 422 Unprocessable Entity';
-
-    }
-
-    // send output
-
-    if (!$strErrorDesc) {
-
-      $this->sendOutput(
-
-        $responseData,
-
-        array('Content-Type: application/json', 'HTTP/1.1 200 OK')
-
-      );
-
-    } else {
-
-      $this->sendOutput(
-        json_encode(array('error' => $strErrorDesc)),
-
-        array('Content-Type: application/json', $strErrorHeader)
-
-      );
-
-    }
-
-  }
 }

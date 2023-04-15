@@ -22,7 +22,7 @@ require_once PROJECT_ROOT_PATH . "/Model/ProductModel.php";
 
 require_once PROJECT_ROOT_PATH . "/Model/CategoryModel.php";
 
-
+require_once PROJECT_ROOT_PATH . "/Model/PaymentModel.php";
 // controllers
 
 require PROJECT_ROOT_PATH . "/Controller/Api/UserController.php";
@@ -30,5 +30,7 @@ require PROJECT_ROOT_PATH . "/Controller/Api/UserController.php";
 require PROJECT_ROOT_PATH . "/Controller/Api/ProductController.php";
 
 require PROJECT_ROOT_PATH . "/Controller/Api/CategoryController.php";
+
+require PROJECT_ROOT_PATH . "/Controller/Api/PaymentController.php";
 
 ?>

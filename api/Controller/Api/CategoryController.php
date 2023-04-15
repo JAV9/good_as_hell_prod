@@ -28,7 +28,7 @@ class CategoryController extends BaseController
 
         $categoryModel = new CategoryModel();
 
-        $intLimit = 10;
+        $intLimit = 10000;
 
         if (isset($arrQueryStringParams['limit']) && $arrQueryStringParams['limit']) {
 

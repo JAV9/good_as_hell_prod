@@ -5,16 +5,33 @@ require_once PROJECT_ROOT_PATH . "/Model/Database.php";
 class ProductModel extends Database
 {
 
-  public function getProducts($limit)
+  public function getProducts($filters)
   {
 
+    $params = [];
+    $query = "SELECT p.* FROM products AS p ";
+    $joins = "";
+    $where = " WHERE 1 ";
 
-    $params = [
-      $limit
-    ];
+    foreach ($filters as $key => $value) {
 
+      if ($key == "category") {
+        $joins .= " LEFT JOIN product_categories AS pc 
+                    ON pc.product = p.id
+                    LEFT JOIN categories AS c 
+                    ON c.id = pc.category ";
+        $where .= " AND c.name = ? ";
 
-    return $this->select("SELECT * FROM products ORDER BY id DESC LIMIT ?", $params);
+        array_push($params, $value);
+      }
+
+    }
+
+    $query .= $joins . $where;
+
+    $query .= " ORDER BY id DESC";
+
+    return $this->select($query, $params);
 
   }
 
@@ -26,7 +43,6 @@ class ProductModel extends Database
     ];
 
     //return $this->select("SELECT * FROM products WHERE url = ?", $params)[0];
-
 
     $product = $this->select("SELECT * FROM products WHERE url = ?", $params)[0];
 
