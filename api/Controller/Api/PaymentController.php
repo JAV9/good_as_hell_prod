@@ -99,23 +99,16 @@ class PaymentController extends BaseController
 
       try {
 
+
         $paymentModel = new PaymentModel();
+
+        $products = json_decode($params["products"], true);
 
         $arr = $paymentModel->create(
           $params['user'],
           $params['total'],
-          json_decode($params["products"], true)
+          $products
         );
-
-        // si arr[code] == 200 entonces insertar productos pago
-        // obtener ultima id de pago
-        $insertedId = $this->getLastInsertId();
-
-        if ($arr["code"] == 200) {
-          $productsOk = $paymentModel->insertProducts($insertedId, $params["products"]);
-
-          $arr["productosOk"] = $productsOk;
-        }
 
         $responseData = json_encode($arr);
 

@@ -51,6 +51,11 @@ class PaymentModel extends Database
 
       $response = ["code" => 200, "message" => "Pago insertado"];
 
+
+      $insertedId = $this->getLastInsertId();
+
+      $this->insertProducts($insertedId, $products);
+
     }
 
     return $response;
@@ -67,14 +72,14 @@ class PaymentModel extends Database
 
       $params = [
         $pedido,
-        $p
+        $p["id"]
       ];
 
-      $todoOk = $this->insert("INSERT INTO payment (user, total, state) VALUES (
-            ?,
+      $todoOk = $this->insert("INSERT INTO payment_products (payment,product) VALUES (
             ?,
             ?
-        )", $params) && $todoOk;
+        )", $params);
+
 
     }
 
