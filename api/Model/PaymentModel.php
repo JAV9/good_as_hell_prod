@@ -49,10 +49,9 @@ class PaymentModel extends Database
 
     if ($result["state"]) {
 
-      $response = ["code" => 200, "message" => "Pago insertado"];
-
-
       $insertedId = $this->getLastInsertId();
+
+      $response = ["code" => 200, "message" => "Pago insertado", "id" => $insertedId, "total" => $total];
 
       $this->insertProducts($insertedId, $products);
 

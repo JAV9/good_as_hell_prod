@@ -74,9 +74,6 @@ function initialOperationV1($orderID)
 
   //Method the gives the request Result (OK/KO/AUT)
 
-  echo "RESPONSE";
-  var_dump($response->getResult());
-
   switch ($response->getResult()) {
 
 

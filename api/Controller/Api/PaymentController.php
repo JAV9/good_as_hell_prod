@@ -112,6 +112,8 @@ class PaymentController extends BaseController
 
         $responseData = json_encode($arr);
 
+        return $responseData;
+
       } catch (Error $e) {
 
         $strErrorDesc = $e->getMessage() . 'Something went wrong! Please contact support.';
