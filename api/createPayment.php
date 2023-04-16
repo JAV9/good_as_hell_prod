@@ -19,7 +19,8 @@ $moneda = "978";
 $trans = "0";
 $url = "";
 //$urlOKKO = "https://vm20.containers.fdi.ucm.es/api/receiveRedsysResponse.php";
-$urlOKKO = "https://vm20.containers.fdi.ucm.es/api/receiveRedsysResponse.php";
+$urlOK = "https://vm20.containers.fdi.ucm.es/api/receiveRedsysResponse.php";
+$urlKO = "https://vm20.containers.fdi.ucm.es/pago/error";
 
 $id = time();
 
@@ -31,8 +32,8 @@ $redsys->setParameter("DS_MERCHANT_CURRENCY", $moneda);
 $redsys->setParameter("DS_MERCHANT_TRANSACTIONTYPE", $trans);
 $redsys->setParameter("DS_MERCHANT_TERMINAL", $terminal);
 $redsys->setParameter("DS_MERCHANT_MERCHANTURL", $url);
-$redsys->setParameter("DS_MERCHANT_URLOK", $urlOKKO);
-$redsys->setParameter("DS_MERCHANT_URLKO", $urlOKKO);
+$redsys->setParameter("DS_MERCHANT_URLOK", $urlOK);
+$redsys->setParameter("DS_MERCHANT_URLKO", $urlKO);
 $redsys->setParameter("DS_MERCHAN_PRODUCTDESCRIPTION", $paymentId);
 
 //Datos de configuración
