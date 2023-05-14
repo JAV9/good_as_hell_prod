@@ -20,23 +20,22 @@ class PaymentController extends BaseController
 
     $requestMethod = $_SERVER["REQUEST_METHOD"];
 
-    $arrQueryStringParams = $this->getQueryStringParams();
+    $arrQueryStringParams = $this->getGETParams();
 
     if (strtoupper($requestMethod) == 'GET') {
 
       try {
 
         $paymentModel = new PaymentModel();
+        $user = null;
 
-        $intLimit = 10000;
+        if (isset($arrQueryStringParams['user']) && $arrQueryStringParams['user']) {
 
-        if (isset($arrQueryStringParams['limit']) && $arrQueryStringParams['limit']) {
-
-          $intLimit = $arrQueryStringParams['limit'];
+          $user = $arrQueryStringParams['user'];
 
         }
 
-        $arr = $paymentModel->listPayment($intLimit);
+        $arr = $paymentModel->listPayment($user);
 
         $responseData = json_encode($arr);
 
@@ -318,11 +317,11 @@ class PaymentController extends BaseController
 
         $paymentModel = new PaymentModel();
 
-        $arr = $paymentModel->getPayment($arrQueryStringParams['url']);
+        $arr = $paymentModel->getPayment($arrQueryStringParams['id']);
 
         if ($arr == NULL) {
 
-          $responseData = json_encode(["code" => 401, "error" => "Categoria no encontrada"]);
+          $responseData = json_encode(["code" => 401, "error" => "pago no encontrado"]);
 
         } else {
 
@@ -369,6 +368,54 @@ class PaymentController extends BaseController
 
       );
 
+    }
+
+  }
+
+  public function updateState($state, $id, $done, $doneAt)
+  {
+
+    $strErrorDesc = '';
+
+    $paymentModel = new PaymentModel();
+
+    try {
+
+      $paymentModel = new PaymentModel();
+
+      $arr = $paymentModel->updateState(
+        $state,
+        $id,
+        $done,
+        $doneAt
+      );
+
+      $responseData = json_encode($arr);
+
+    } catch (Error $e) {
+
+      $strErrorDesc = $e->getMessage() . 'Something went wrong! Please contact support.';
+
+      $strErrorHeader = 'HTTP/1.1 500 Internal Server Error';
+
+    }
+
+    // send output
+
+    if (!$strErrorDesc) {
+
+      return $responseData;
+
+    } else {
+
+      /*
+      $this->sendOutput(
+      json_encode(array('error' => $strErrorDesc)),
+      array('Content-Type: application/json', $strErrorHeader)
+      );
+      */
+
+      return "error updating signature";
     }
 
   }

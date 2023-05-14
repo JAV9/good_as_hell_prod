@@ -19,6 +19,9 @@ $moneda = "978";
 $trans = "0";
 $url = "";
 //$urlOKKO = "https://vm20.containers.fdi.ucm.es/api/receiveRedsysResponse.php";
+//$urlOK = "https://vm20.containers.fdi.ucm.es/api/receiveRedsysResponse.php";
+//$urlKO = "https://vm20.containers.fdi.ucm.es/pago/error";
+
 $urlOK = "https://vm20.containers.fdi.ucm.es/api/receiveRedsysResponse.php";
 $urlKO = "https://vm20.containers.fdi.ucm.es/pago/error";
 
@@ -34,7 +37,7 @@ $redsys->setParameter("DS_MERCHANT_TERMINAL", $terminal);
 $redsys->setParameter("DS_MERCHANT_MERCHANTURL", $url);
 $redsys->setParameter("DS_MERCHANT_URLOK", $urlOK);
 $redsys->setParameter("DS_MERCHANT_URLKO", $urlKO);
-$redsys->setParameter("DS_MERCHAN_PRODUCTDESCRIPTION", $paymentId);
+$redsys->setParameter("DS_MERCHANT_MERCHANTDATA", $paymentId);
 
 //Datos de configuración
 $version = "HMAC_SHA256_V1";

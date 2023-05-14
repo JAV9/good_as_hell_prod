@@ -118,8 +118,11 @@ class ProductController extends BaseController
 
         $arr = $productModel->create(
           $params['name'],
+          $params['description'],
+          $params['material'],
           $params['price'],
           $params['available'],
+          $params['stock'],
           $img,
           $this->auxFunc->seofy($params['name']),
           json_decode($params["categories"], true)
@@ -205,8 +208,11 @@ class ProductController extends BaseController
         $arr = $productModel->updateProduct(
           $params['id'],
           $params['name'],
+          $params['description'],
+          $params['material'],
           $params['price'],
           $params['available'],
+          $params['stock'],
           $img,
           $this->auxFunc->seofy($params['name']),
           json_decode($params["categories"], true)

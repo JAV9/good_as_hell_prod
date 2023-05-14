@@ -31,8 +31,27 @@ class ProductModel extends Database
 
     $query .= " ORDER BY id DESC";
 
-    return $this->select($query, $params);
+    $products = $this->select($query, $params);
 
+    $queryCategories = "SELECT c.name 
+                        FROM categories AS c 
+                        LEFT JOIN product_categories AS pc 
+                          ON pc.category = c.id 
+                        WHERE pc.product = ? ";
+
+
+    for ($i = 0; $i < count($products); $i++) {
+      $p = $products[$i];
+
+      $paramsCateg = [
+        $p["id"]
+      ];
+      $productCategories = $this->select($queryCategories, $paramsCateg);
+      $products[$i]["categories"] = $array = array_column($productCategories, 'name');
+
+    }
+
+    return $products;
   }
 
   public function getProduct($url)
@@ -94,22 +113,48 @@ class ProductModel extends Database
       $name
     ];
 
-    return $this->select("SELECT * FROM products WHERE name LIKE CONCAT('%',?,'%')", $params);
+
+    $products = $this->select("SELECT * FROM products WHERE name LIKE CONCAT('%',?,'%')", $params);
+
+    $queryCategories = "SELECT c.name 
+                        FROM categories AS c 
+                        LEFT JOIN product_categories AS pc 
+                          ON pc.category = c.id 
+                        WHERE pc.product = ? ";
+
+
+    for ($i = 0; $i < count($products); $i++) {
+      $p = $products[$i];
+
+      $paramsCateg = [
+        $p["id"]
+      ];
+      $productCategories = $this->select($queryCategories, $paramsCateg);
+      $products[$i]["categories"] = $array = array_column($productCategories, 'name');
+    }
+
+    return $products;
 
   }
 
-  public function create($name, $price, $available, $img, $url, $categories)
+  public function create($name, $description, $material, $price, $available, $stock, $img, $url, $categories)
   {
 
     $params = [
       $name,
+      $description,
+      $material,
       $price,
       $available,
+      $stock,
       $img,
       $url
     ];
 
-    $result = $this->insert("INSERT INTO products (name, price, available, img, url) VALUES (
+    $result = $this->insert("INSERT INTO products (name, description, material, price, available, stock, img, url) VALUES (
+          ?,
+          ?,
+          ?,
           ?,
           ?,
           ?,
@@ -185,30 +230,36 @@ class ProductModel extends Database
     return $this->delete($query, $params);
   }
 
-  public function updateProduct($id, $name, $price, $available, $img, $url, $categories)
+  public function updateProduct($id, $name, $description, $material, $price, $available, $stock, $img, $url, $categories)
   {
 
-    $query = "UPDATE products SET name = ?, price = ?, available = ?, url = ? WHERE id = ?";
+    $query = "UPDATE products SET name = ?, description = ?, material = ?, price = ?, available = ?, stock = ?, url = ? WHERE id = ?";
 
     if ($img != NULL) {
 
       $params = [
         $name,
+        $description,
+        $material,
         $price,
         $available,
+        $stock,
         $img,
         $url,
         $id
       ];
 
-      $query = "UPDATE products SET name = ?, price = ?, available = ?, img = ?, url = ? WHERE id = ?";
+      $query = "UPDATE products SET name = ?, description = ?, material = ?, price = ?, available = ?, stock = ?, img = ?, url = ? WHERE id = ?";
 
     } else {
 
       $params = [
         $name,
+        $description,
+        $material,
         $price,
         $available,
+        $stock,
         $url,
         $id
       ];
