@@ -18,12 +18,12 @@ $terminal = "1";
 $moneda = "978";
 $trans = "0";
 $url = "";
-//$urlOKKO = "https://vm20.containers.fdi.ucm.es/api/receiveRedsysResponse.php";
-//$urlOK = "https://vm20.containers.fdi.ucm.es/api/receiveRedsysResponse.php";
-//$urlKO = "https://vm20.containers.fdi.ucm.es/pago/error";
+//$urlOKKO = "http://localhost:8888/api/receiveRedsysResponse.php";
+//$urlOK = "http://localhost:8888/api/receiveRedsysResponse.php";
+//$urlKO = "http://localhost:8888/pago/error";
 
-$urlOK = "https://vm20.containers.fdi.ucm.es/api/receiveRedsysResponse.php";
-$urlKO = "https://vm20.containers.fdi.ucm.es/pago/error";
+$urlOK = "http://localhost:8888/api/receiveRedsysResponse.php";
+$urlKO = "http://localhost:8888/pago/error";
 
 $id = time();
 

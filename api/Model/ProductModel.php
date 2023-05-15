@@ -54,6 +54,55 @@ class ProductModel extends Database
     return $products;
   }
 
+  public function getProductsAdmin($filters)
+  {
+
+    $params = [];
+    $query = "SELECT p.* FROM products AS p ";
+    $joins = "";
+    $where = " WHERE p.available = 1 ";
+
+    foreach ($filters as $key => $value) {
+
+      if ($key == "category") {
+        $joins .= " LEFT JOIN product_categories AS pc 
+                    ON pc.product = p.id
+                    LEFT JOIN categories AS c 
+                    ON c.id = pc.category ";
+        $where .= " AND c.name = ? ";
+
+        array_push($params, $value);
+      }
+
+    }
+
+    $query .= $joins . $where;
+
+    $query .= " ORDER BY id DESC";
+
+    $products = $this->select($query, $params);
+
+    $queryCategories = "SELECT c.name 
+                        FROM categories AS c 
+                        LEFT JOIN product_categories AS pc 
+                          ON pc.category = c.id 
+                        WHERE pc.product = ? ";
+
+
+    for ($i = 0; $i < count($products); $i++) {
+      $p = $products[$i];
+
+      $paramsCateg = [
+        $p["id"]
+      ];
+      $productCategories = $this->select($queryCategories, $paramsCateg);
+      $products[$i]["categories"] = $array = array_column($productCategories, 'name');
+
+    }
+
+    return $products;
+  }
+
   public function getProduct($url)
   {
 
