@@ -8,9 +8,9 @@ $payment = new PaymentController();
 
 // Se crea Objeto
 $redsys = new RedsysAPI;
-//$url = "http://localhost:8888/pago/";
+//$url = "https://vm20.containers.fdi.ucm.es/pago/";
 
-$url = "http://localhost:8888/pago/";
+$url = "https://vm20.containers.fdi.ucm.es/pago/";
 
 
 if (!empty($_POST)) { //URL DE RESP. ONLINE
