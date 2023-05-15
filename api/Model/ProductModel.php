@@ -11,7 +11,7 @@ class ProductModel extends Database
     $params = [];
     $query = "SELECT p.* FROM products AS p ";
     $joins = "";
-    $where = " WHERE 1 ";
+    $where = " WHERE available = 1 ";
 
     foreach ($filters as $key => $value) {
 
@@ -60,7 +60,7 @@ class ProductModel extends Database
     $params = [];
     $query = "SELECT p.* FROM products AS p ";
     $joins = "";
-    $where = " WHERE p.available = 1 ";
+    $where = " WHERE 1 ";
 
     foreach ($filters as $key => $value) {
 
